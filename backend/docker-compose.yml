@@ -1,0 +1,51 @@
+version: '3.8'
+
+networks:
+  backend-bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+
+  frontend-bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+services:
+
+  db:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: WkOn357
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend-bridge
+  
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    networks:
+      - backend-bridge
+  
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - frontend-bridge
+
+volumes:
+  mongo-data:
