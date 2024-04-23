@@ -1,0 +1,49 @@
+version: '3.8'
+
+networks:
+  backend-overlay:
+    driver: overlay
+    ipam:
+      config:
+        - subnet: 10.0.2.0/24
+
+  frontend-overlay:
+    driver: overlay
+    ipam:
+      config:
+        - subnet: 10.0.3.0/24
+
+services:
+
+  db:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: WkOn357
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend-overlay
+  
+  app:
+    image: backend-app:latest
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    networks:
+      - backend-overlay
+  
+  frontend:
+    image: frontend-app:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - frontend-overlay
+
+volumes:
+  mongo-data:
