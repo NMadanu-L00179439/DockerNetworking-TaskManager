@@ -1,4 +1,4 @@
-# Docker Network Implementation Examples
+# Docker Network Implementation
 
 ## Implementation using Bridge Network
 
@@ -15,7 +15,7 @@ docker-compose up
 
 ## Implementation using Overlay Network
 
-The Docker Compose configuration specifies two overlay networks: backend-overlay and frontend-overlay, each with a unique subnet range. Three services are identified: db, app, and frontend. The db service utilizes the MongoDB image, exposes port 27017, and is connected to the backend-overlay network. The app service utilizes a custom backend application image, exposes port 3000, and depends on the db service. The frontend service utilizes a custom frontend application image, exposes port 8080, and is connected to the frontend-overlay network.
+The Docker Compose configuration specifies two overlay networks: `backend-overlay` and `frontend-overlay`, each with a unique subnet range. Three services are identified: `db`, `app`, and `frontend`. The `db` service utilizes the MongoDB image, exposes port 27017, and is connected to the `backend-overlay` network. The `app` service utilizes a custom backend application image, exposes port 3000, and depends on the `db` service. The `frontend` service utilizes a custom `frontend` application image, exposes port 8080, and is connected to the `frontend-overlay` network.
 
 ### Deployment
 
@@ -37,5 +37,30 @@ Deploying Stack
 
 ```
 docker stack deploy --compose-file docker-compose-overlay.yml task-manager-stack
+
+```
+
+List the docker swarm services
+
+```
+docker service ls
+ID             NAME                          MODE         REPLICAS   IMAGE                 PORTS
+xxx   task-manager-stack_app        replicated   1/1        backend-app:latest    *:3000->3000/tcp
+xxx   task-manager-stack_db         replicated   1/1        mongo:latest          *:27017->27017/tcp
+xxx   task-manager-stack_frontend   replicated   1/1        frontend-app:latest   *:8080->8080/tcp
+```
+
+Overlay Network 
+
+```
+docker network ls
+NETWORK ID     NAME                                  DRIVER    SCOPE
+xxx   bridge                                bridge    local
+xxx   docker_gwbridge                       bridge    local
+xxx   host                                  host      local
+xxx   ingress                               overlay   swarm
+xxx   none                                  null      local
+xxx   task-manager-stack_backend-overlay    overlay   swarm
+xxx   task-manager-stack_frontend-overlay   overlay   swarm
 ```
 
